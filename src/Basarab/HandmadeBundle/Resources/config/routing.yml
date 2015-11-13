@@ -1,0 +1,3 @@
+basarab_handmade_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: BasarabHandmadeBundle:Default:index }

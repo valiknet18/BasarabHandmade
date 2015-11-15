@@ -1,4 +1,5 @@
 <ul class="list-group">
+    <h3>{{ tags|length }} доступних тегів</h3>
     {% for tag in tags %}
         <li class="list-group-item">
             <a href="{{ path("basarab_handmade_tags_get", {"slug": tag.slug}) }}">
@@ -7,7 +8,7 @@
         </li>
     {% else %}
         <li class="list-group-item">
-            <h3>
+            <h3 class="alert alert-danger">
                 На даний момент не добавлено ні одного тегу
             </h3>
         </li>

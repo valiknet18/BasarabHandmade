@@ -20,6 +20,14 @@
         <div class="col-md-12">
             {% for handmade in pagination %}
                 <div class="col-md-4">
+                    {% if handmade.files and handmade.files|length > 0 %}
+                        <div>
+                            <img src="{{ handmade.files[0].getWebPath  | imagine_filter('handmade_photo') }}" />
+                        </div>
+                    {% endif %}
+                    <div>
+
+                    </div>
                     <h4>
                         <a href="{{ path('basarab_handmade_handmades_get', {'slug': handmade.slug}) }}">{{ handmade.name }}</a>
                     </h4>
@@ -32,11 +40,13 @@
                         {% endfor %}
                     </div>
                     <div>
-                        Автор: <a href="">{{ handmade.author.name }} {{ handmade.author.surname }}</a>
+                        <b>Автор:</b> <a href="{{ path("basarab_handmade_users_get", {"slug": handmade.author.slug}) }}">{{ handmade.author.name }} {{ handmade.author.surname }}</a>
                     </div>
                 </div>
             {% else %}
-                <h3>На даний момент не добавлено ні одного запису</h3>
+                <h3 class="alert alert-danger">
+                    На даний момент не добавлено ні одного запису
+                </h3>
             {% endfor %}
 
             {% if pagination|length > 0 %}

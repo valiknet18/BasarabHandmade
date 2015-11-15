@@ -24,7 +24,7 @@ class Tag
     private $name;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Handmade", inversedBy="tags")
+     * @ORM\ManyToMany(targetEntity="Handmade", inversedBy="tags", cascade={"persist"})
      */
     public $handmades;
 
@@ -131,5 +131,10 @@ class Tag
     public function getSlug()
     {
         return $this->slug;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 }

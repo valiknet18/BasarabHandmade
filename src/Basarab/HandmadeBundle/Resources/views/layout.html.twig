@@ -2,6 +2,9 @@
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
         <title>{% block title %}{% endblock %}</title>
     </head>
 
@@ -29,7 +32,7 @@
                         <ul class="nav navbar-nav pull-right">
                             {% if app.user %}
                                 <li>
-                                    <a href="#">Створити запис</a>
+                                    <a href="{{ path('basarab_handmade_handmades_create') }}"><span class="glyphicon glyphicon-plus"></span>Створити запис</a>
                                 </li>
                                 <li>
                                     <img src="{{ app.user.getWebPath | imagine_filter("mini_avatar") }}" />
@@ -53,6 +56,16 @@
                     </div>
                 </div>
             </nav>
+
+            <div class="row">
+                {% for label, flashes in app.session.flashbag.all %}
+                    {% for flash in flashes %}
+                        <div class="alert alert-{{ label }}">
+                            {{ flash }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
 
             {% block content %}{% endblock %}
 

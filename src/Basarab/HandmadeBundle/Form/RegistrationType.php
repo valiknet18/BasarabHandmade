@@ -10,54 +10,71 @@ class RegistrationType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('email', 'email')
-        ;
-
-        $builder
-            ->add('username', 'text')
-        ;
-
-        $builder
+            ->add('email', 'email', [
+                'label' => 'Email',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+            ])
+            ->add('username', 'text', [
+                'label' => 'username',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
+            ])
             ->add('plainPassword', 'repeated', [
                 'type' => 'password',
-                'first_options' => array('label' => 'Пароль'),
-                'second_options' => array('label' => 'Повторіть пароль'),
+                'first_options' => [
+                    'label' => 'Пароль',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
+                ],
+                'second_options' => [
+                    'label' => 'Повторіть пароль',
+                    'attr' => [
+                        'class' => 'form-control'
+                    ],
+                ],
+                'attr' => [
+                    'class' => 'form-control'
+                ],
             ])
-        ;
-
-        $builder
             ->add('name', 'text', [
-                'label' => 'Ім`я'
+                'label' => 'Ім`я',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
             ])
-        ;
-
-        $builder
             ->add('surname', 'text', [
-                'label' => 'Прізвище'
+                'label' => 'Прізвище',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
             ])
-        ;
-
-        $builder
             ->add('phone', 'text', [
-                'label' => 'Номер телефону'
+                'label' => 'Номер телефону',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
             ])
-        ;
-
-        $builder
             ->add('address', 'text', [
-                'label' => 'Адреса'
+                'label' => 'Адреса',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
             ])
-        ;
-
-        $builder
             ->add('description', 'textarea', [
-                'label' => 'Опис'
+                'label' => 'Опис',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
             ])
-        ;
-
-        $builder
-            ->add('avatar', 'file', [
+            ->add('file', 'file', [
                 'label' => 'Аватарка',
+                'attr' => [
+                    'class' => 'form-control'
+                ],
                 'data_class' => null
             ])
         ;

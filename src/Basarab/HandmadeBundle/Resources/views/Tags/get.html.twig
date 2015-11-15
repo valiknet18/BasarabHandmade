@@ -6,17 +6,34 @@
 
 {% block content %}
     <div class="col-md-12 row">
+        <h3>Товари знайдені по тегу {{ tag.name }}</h3>
+
         {% for handmade in tag.handmades %}
             <div class="col-md-4">
+                {% if handmade.files and handmade.files|length > 0 %}
+                    <div>
+                        <img src="{{ handmade.files[0].getWebPath  | imagine_filter('handmade_photo') }}" />
+                    </div>
+                {% endif %}
                 <h4>
                     <a href="{{ path('basarab_handmade_handmades_get', {'slug': handmade.slug}) }}">{{ handmade.name }}</a>
                 </h4>
                 <p>
                     {{ handmade.text | slice(0, 150) }}...
                 </p>
+                <div>
+                    {% for tag in handmade.tags|slice(0, 4) %}
+                        <a href="{{ path("basarab_handmade_tags_get", {"slug": tag.slug}) }}" class="badge">{{ tag.name }}</a>
+                    {% endfor %}
+                </div>
+                <div>
+                    <b>Автор:</b> <a href="{{ path("basarab_handmade_users_get", {"slug": handmade.author.slug}) }}">{{ handmade.author.name }} {{ handmade.author.surname }}</a>
+                </div>
             </div>
         {% else %}
-            <h3>На даний момент не добавлено ні одного запису</h3>
+            <h3 class="alert alert-danger">
+                На даний момент не добавлено ні одного запису
+            </h3>
         {% endfor %}
     </div>
 {% endblock %}

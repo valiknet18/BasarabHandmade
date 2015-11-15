@@ -48,7 +48,7 @@ class User extends BaseUser
     public $address;
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="string")
      */
     public $avatar;
 
@@ -69,6 +69,8 @@ class User extends BaseUser
 
     private $file;
 
+    private $temp;
+
     /**
      * Get id
      *
@@ -85,8 +87,6 @@ class User extends BaseUser
         // your own logic
     }
 
-    private $temp;
-
     /**
      * Sets file.
      *
@@ -99,7 +99,7 @@ class User extends BaseUser
         if (is_file($this->getAbsolutePath())) {
             // store the old name to delete after the update
             $this->temp = $this->getAbsolutePath();
-            $this->avatar = null;
+            $this->file = null;
         } else {
             $this->avatar = 'initial';
         }
@@ -117,7 +117,8 @@ class User extends BaseUser
     public function preUpload()
     {
         if (null !== $this->getFile()) {
-            $this->avatar = $this->getFile()->guessExtension();
+            $filename = sha1(uniqid(mt_rand(), true));
+            $this->avatar = $filename.'.'.$this->getFile()->guessExtension();
         }
     }
 
@@ -144,8 +145,9 @@ class User extends BaseUser
         // which the UploadedFile move() method does
         $this->getFile()->move(
             $this->getUploadRootDir(),
-            $this->id.'.'.$this->getFile()->guessExtension()
+            $this->avatar
         );
+
 
         $this->setFile(null);
     }
@@ -172,7 +174,7 @@ class User extends BaseUser
     {
         return null === $this->avatar
             ? null
-            : $this->getUploadRootDir().'/'.$this->id.'.'.$this->avatar;
+            : $this->getUploadRootDir().'/'.$this->avatar;
     }
 
     protected function getUploadRootDir()

@@ -4,10 +4,13 @@ namespace Basarab\HandmadeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="handmades")
+ * @ORM\HasLifecycleCallbacks
  */
 class Handmade
 {
@@ -16,7 +19,7 @@ class Handmade
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $id;
+    private $id;
 
     /**
      * @ORM\Column(type="string")
@@ -30,6 +33,7 @@ class Handmade
 
     /**
      * @ORM\OneToMany(targetEntity="Comment", mappedBy="handmade")
+     * @ORM\OrderBy({"createdAt" = "ASC"})
      */
     public $comments;
 
@@ -39,14 +43,16 @@ class Handmade
     public $author;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Tag", mappedBy="handmades")
+     * @ORM\ManyToMany(targetEntity="Tag", mappedBy="handmades", cascade={"persist"})
      */
     public $tags;
 
     /**
-     * @ORM\OneToMany(targetEntity="File", mappedBy="handmade")
+     * @ORM\OneToMany(targetEntity="File", mappedBy="handmade", cascade={"persist"})
      */
     public $files;
+
+    private $uploadedFiles;
 
     /**
      * @ORM\Column(type="string", unique=true)
@@ -55,9 +61,9 @@ class Handmade
     public $slug;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="datetime")
      */
-    public $like;
+    public $createdAt;
 
     /**
      * Get id
@@ -68,6 +74,7 @@ class Handmade
     {
         return $this->id;
     }
+
     /**
      * Constructor
      */
@@ -193,6 +200,7 @@ class Handmade
      */
     public function addTag(\Basarab\HandmadeBundle\Entity\Tag $tag)
     {
+        $tag->addHandmade($this);
         $this->tags[] = $tag;
 
         return $this;
@@ -205,6 +213,7 @@ class Handmade
      */
     public function removeTag(\Basarab\HandmadeBundle\Entity\Tag $tag)
     {
+        $tag->removeHandmade($this);
         $this->tags->removeElement($tag);
     }
 
@@ -298,5 +307,71 @@ class Handmade
     public function getLike()
     {
         return $this->like;
+    }
+
+    public function setUploadedFiles(array $uploadedFiles)
+    {
+        $this->uploadedFiles = $uploadedFiles;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     */
+    public function upload()
+    {
+        foreach($this->uploadedFiles as $uploadedFile)
+        {
+            $file = new File();
+
+            /*
+             * These lines could be moved to the File Class constructor to factorize
+             * the File initialization and thus allow other classes to own Files
+             */
+            $path = sha1(uniqid(mt_rand(), true)).'.'. $uploadedFile->guessExtension();
+            $file->setPath($path);
+
+            $uploadedFile->move($this->getUploadRootDir(), $path);
+
+            $this->getFiles()->add($file);
+            $file->setHandmade($this);
+
+            unset($uploadedFile);
+        }
+    }
+
+    public function getUploadedFiles()
+    {
+        return $this->uploadedFiles;
+    }
+
+    protected function getUploadRootDir()
+    {
+        // the absolute directory path where uploaded
+        // documents should be saved
+        return __DIR__.'/../../../../web/'.$this->getUploadDir();
+    }
+
+    protected function getUploadDir()
+    {
+        // get rid of the __DIR__ so it doesn't screw up
+        // when displaying uploaded doc/image in the view.
+        return 'uploads/handmades/';
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAt()
+    {
+        return $this->createdAt = new \DateTime();
     }
 }

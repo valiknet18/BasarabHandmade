@@ -49,6 +49,11 @@
                 <h3>Рукоділля:</h3>
                 {% for handmade in user.handmades %}
                     <div class="col-md-12">
+                        {% if handmade.files and handmade.files|length > 0 %}
+                            <div>
+                                <img src="{{ handmade.files[0].getWebPath  | imagine_filter('handmade_photo') }}" />
+                            </div>
+                        {% endif %}
                         <h4>
                             <a href="{{ path('basarab_handmade_handmades_get', {'slug': handmade.slug}) }}">{{ handmade.name }}</a>
                         </h4>
@@ -65,7 +70,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <h3>На даний момент цей користувач не добавив ні одного запису</h3>
+                    <h4 class="alert alert-danger">На даний момент цей користувач не добавив ні одного запису</h4>
                 {% endfor %}
             </div>
 
@@ -78,9 +83,12 @@
                         <p>
                             {{ comment.comment }}
                         </p>
+                        <div>
+                            Дата створення: <b>{{ comment.createdAt|date('Y-m-d h:i:s') }}</b>
+                        </div>
                     </div>
                 {% else %}
-                    <h3>На даний момент цей користувач не добавив ні одного запису</h3>
+                    <h4 class="alert alert-danger">На даний момент цей користувач не добавив ні одного запису</h4>
                 {% endfor %}
             </div>
         </div>

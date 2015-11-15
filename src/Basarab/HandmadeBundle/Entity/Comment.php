@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="comments")
+ * @ORM\HasLifecycleCallbacks
  */
 class Comment
 {
@@ -31,6 +32,11 @@ class Comment
      * @ORM\ManyToOne(targetEntity="User", inversedBy="comments")
      */
     public $author;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    public $createdAt;
 
     /**
      * Get id
@@ -112,5 +118,21 @@ class Comment
     public function getAuthor()
     {
         return $this->author;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function setCreatedAt()
+    {
+        return $this->createdAt = new \DateTime();
     }
 }

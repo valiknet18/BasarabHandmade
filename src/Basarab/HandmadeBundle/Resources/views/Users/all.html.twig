@@ -1,0 +1,38 @@
+{% extends 'BasarabHandmadeBundle::layout.html.twig' %}
+
+{% block title %}
+    Користувачі
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12">
+        {% for user in pagination %}
+            <div class="col-md-6">
+                <div class="col-md-5">
+                    <img src="{{ user.getWebPath | imagine_filter('all_users_thumb')}}">
+                </div>
+
+                <div class="col-md-7">
+                    <h4>
+                        <a href="{{ path('basarab_handmade_users_get', {'slug': user.slug}) }}">{{ user.name }} {{ user.surname }}</a>
+                    </h4>
+                    <p>
+                        {{ user.description | slice(0, 150) }}...
+                    </p>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="col-md-6">
+                        Кількість рукоділь: {{ user.handmades|length }}
+                    </div>
+
+                    <div class="col-md-6">
+                        Кількість комментарів: {{ user.comments|length }}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <h3>На даний момент немає ні одного користувача</h3>
+        {% endfor %}
+    </div>
+{% endblock %}

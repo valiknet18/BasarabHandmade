@@ -10,3 +10,6 @@
 /vendor/
 /web/bundles/
 /.idea/
+*~
+web/media
+web/uploads/avatars

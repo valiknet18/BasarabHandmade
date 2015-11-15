@@ -1,0 +1,62 @@
+{% extends 'BasarabHandmadeBundle::layout.html.twig' %}
+
+{% block title %}
+    {{ handmade.name }}
+{% endblock %}
+
+{% block content %}
+    <div id="sidebar-wrapper" class="col-md-4">
+        {% include "BasarabHandmadeBundle:Tags:_tags.html.twig" %}
+    </div>
+
+    <div class="row col-md-8">
+        <div class="col-md-12">
+            <h3>{{ handmade.name }}</h3>
+            <p>
+                {{ handmade.text }}
+            </p>
+
+            <div class="col-md-12">
+                {% for tag in handmade.tags %}
+                    <a href="{{ path("basarab_handmade_tags_get", {"slug": tag.slug}) }}" class="badge">{{ tag.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <h3>Коментарі</h3>
+
+        {% for comment in handmade.comments %}
+            <div class="col-md-12">
+                <h3>{{ comment.author.name }} {{ comment.author.surname }}</h3>
+                <p>
+                    {{ comment.comment }}
+                </p>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="col-md-6">
+        <h3>Схожі товари</h3>
+
+        {% for handmade in handmade.tags[0].handmades|slice(0, 5) %}
+            <div class="col-md-4">
+                <h4>
+                    <a href="{{ path('basarab_handmade_handmades_get', {'slug': handmade.slug}) }}">{{ handmade.name }}</a>
+                </h4>
+                <p>
+                    {{ handmade.text | slice(0, 150) }}...
+                </p>
+                <div>
+                    {% for tag in handmade.tags|slice(0, 4) %}
+                        <a href="{{ path("basarab_handmade_tags_get", {"slug": tag.slug}) }}" class="badge">{{ tag.name }}</a>
+                    {% endfor %}
+                </div>
+                <div>
+                    Автор: <a href="">{{ handmade.author.name }} {{ handmade.author.surname }}</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

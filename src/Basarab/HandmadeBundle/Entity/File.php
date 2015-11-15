@@ -15,18 +15,17 @@ class File
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="auto")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
     /**
-     * @ORM\Column(type="string", nullable="true")
+     * @ORM\Column(type="string", nullable=true)
      */
     private $path;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Handmade", inverseBy="files
-     * ")
+     * @ORM\ManyToOne(targetEntity="Handmade", inversedBy="files")
      */
     public $handmade;
 
@@ -130,5 +129,53 @@ class File
         if ($file) {
             unlink($file);
         }
+    }
+
+    /**
+     * Set path
+     *
+     * @param string $path
+     *
+     * @return File
+     */
+    public function setPath($path)
+    {
+        $this->path = $path;
+
+        return $this;
+    }
+
+    /**
+     * Get path
+     *
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * Set handmade
+     *
+     * @param \Basarab\HandmadeBundle\Entity\Handmade $handmade
+     *
+     * @return File
+     */
+    public function setHandmade(\Basarab\HandmadeBundle\Entity\Handmade $handmade = null)
+    {
+        $this->handmade = $handmade;
+
+        return $this;
+    }
+
+    /**
+     * Get handmade
+     *
+     * @return \Basarab\HandmadeBundle\Entity\Handmade
+     */
+    public function getHandmade()
+    {
+        return $this->handmade;
     }
 }

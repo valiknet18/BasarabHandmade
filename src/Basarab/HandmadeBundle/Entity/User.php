@@ -5,6 +5,7 @@ namespace Basarab\HandmadeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * @ORM\Entity
@@ -16,7 +17,7 @@ class User extends BaseUser
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="auto")
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
 
@@ -31,22 +32,28 @@ class User extends BaseUser
     public $surname;
 
     /**
-     * @ORM\Column(type="string", nullable="true")
+     * @ORM\Column(type="string")
+     * @Gedmo\Slug(fields={"name", "surname"})
+     */
+    public $slug;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
      */
     public $phone;
 
     /**
-     * @ORM\Column(type="string", nullable="true")
+     * @ORM\Column(type="string", nullable=true)
      */
     public $address;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     public $avatar;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     public $description;
 
@@ -60,7 +67,7 @@ class User extends BaseUser
      */
     public $comments;
 
-    private $tmpAvatar;
+    private $file;
 
     /**
      * Get id
@@ -78,33 +85,7 @@ class User extends BaseUser
         // your own logic
     }
 
-    public function getAbsolutePath()
-    {
-        return null === $this->path
-            ? null
-            : $this->getUploadRootDir().'/'.$this->path;
-    }
-
-    public function getWebPath()
-    {
-        return null === $this->path
-            ? null
-            : $this->getUploadDir().'/'.$this->path;
-    }
-
-    protected function getUploadRootDir()
-    {
-        // the absolute directory path where uploaded
-        // documents should be saved
-        return __DIR__.'/../../../../web/'.$this->getUploadDir();
-    }
-
-    protected function getUploadDir()
-    {
-        // get rid of the __DIR__ so it doesn't screw up
-        // when displaying uploaded doc/image in the view.
-        return 'uploads/documents';
-    }
+    private $temp;
 
     /**
      * Sets file.
@@ -115,13 +96,18 @@ class User extends BaseUser
     {
         $this->file = $file;
         // check if we have an old image path
-        if (isset($this->path)) {
+        if (is_file($this->getAbsolutePath())) {
             // store the old name to delete after the update
-            $this->temp = $this->path;
-            $this->path = null;
+            $this->temp = $this->getAbsolutePath();
+            $this->avatar = null;
         } else {
-            $this->path = 'initial';
+            $this->avatar = 'initial';
         }
+    }
+
+    public function getFile()
+    {
+        return $this->file;
     }
 
     /**
@@ -131,9 +117,7 @@ class User extends BaseUser
     public function preUpload()
     {
         if (null !== $this->getFile()) {
-            // do whatever you want to generate a unique name
-            $filename = sha1(uniqid(mt_rand(), true));
-            $this->path = $filename.'.'.$this->getFile()->guessExtension();
+            $this->avatar = $this->getFile()->guessExtension();
         }
     }
 
@@ -147,19 +131,31 @@ class User extends BaseUser
             return;
         }
 
-        // if there is an error when moving the file, an exception will
-        // be automatically thrown by move(). This will properly prevent
-        // the entity from being persisted to the database on error
-        $this->getFile()->move($this->getUploadRootDir(), $this->path);
-
         // check if we have an old image
         if (isset($this->temp)) {
             // delete the old image
-            unlink($this->getUploadRootDir().'/'.$this->temp);
+            unlink($this->temp);
             // clear the temp image path
             $this->temp = null;
         }
-        $this->file = null;
+
+        // you must throw an exception here if the file cannot be moved
+        // so that the entity is not persisted to the database
+        // which the UploadedFile move() method does
+        $this->getFile()->move(
+            $this->getUploadRootDir(),
+            $this->id.'.'.$this->getFile()->guessExtension()
+        );
+
+        $this->setFile(null);
+    }
+
+    /**
+     * @ORM\PreRemove()
+     */
+    public function storeFilenameForRemove()
+    {
+        $this->temp = $this->getAbsolutePath();
     }
 
     /**
@@ -167,9 +163,248 @@ class User extends BaseUser
      */
     public function removeUpload()
     {
-        $file = $this->getAbsolutePath();
-        if ($file) {
-            unlink($file);
+        if (isset($this->temp)) {
+            unlink($this->temp);
         }
+    }
+
+    public function getAbsolutePath()
+    {
+        return null === $this->avatar
+            ? null
+            : $this->getUploadRootDir().'/'.$this->id.'.'.$this->avatar;
+    }
+
+    protected function getUploadRootDir()
+    {
+        // the absolute directory path where uploaded
+        // documents should be saved
+        return __DIR__.'/../../../../web/'.$this->getUploadDir();
+    }
+
+    public function getWebPath()
+    {
+        return null === $this->avatar
+            ? null
+            : $this->getUploadDir().'/'.$this->avatar;
+    }
+
+    protected function getUploadDir()
+    {
+        // get rid of the __DIR__ so it doesn't screw up
+        // when displaying uploaded doc/image in the view.
+        return 'uploads/avatars';
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return User
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set surname
+     *
+     * @param string $surname
+     *
+     * @return User
+     */
+    public function setSurname($surname)
+    {
+        $this->surname = $surname;
+
+        return $this;
+    }
+
+    /**
+     * Get surname
+     *
+     * @return string
+     */
+    public function getSurname()
+    {
+        return $this->surname;
+    }
+
+    /**
+     * Set phone
+     *
+     * @param string $phone
+     *
+     * @return User
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    /**
+     * Get phone
+     *
+     * @return string
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * Set address
+     *
+     * @param string $address
+     *
+     * @return User
+     */
+    public function setAddress($address)
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    /**
+     * Get address
+     *
+     * @return string
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return User
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * Add handmade
+     *
+     * @param \Basarab\HandmadeBundle\Entity\Handmade $handmade
+     *
+     * @return User
+     */
+    public function addHandmade(\Basarab\HandmadeBundle\Entity\Handmade $handmade)
+    {
+        $this->handmades[] = $handmade;
+
+        return $this;
+    }
+
+    /**
+     * Remove handmade
+     *
+     * @param \Basarab\HandmadeBundle\Entity\Handmade $handmade
+     */
+    public function removeHandmade(\Basarab\HandmadeBundle\Entity\Handmade $handmade)
+    {
+        $this->handmades->removeElement($handmade);
+    }
+
+    /**
+     * Get handmades
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHandmades()
+    {
+        return $this->handmades;
+    }
+
+    /**
+     * Add comment
+     *
+     * @param \Basarab\HandmadeBundle\Entity\Comment $comment
+     *
+     * @return User
+     */
+    public function addComment(\Basarab\HandmadeBundle\Entity\Comment $comment)
+    {
+        $this->comments[] = $comment;
+
+        return $this;
+    }
+
+    /**
+     * Remove comment
+     *
+     * @param \Basarab\HandmadeBundle\Entity\Comment $comment
+     */
+    public function removeComment(\Basarab\HandmadeBundle\Entity\Comment $comment)
+    {
+        $this->comments->removeElement($comment);
+    }
+
+    /**
+     * Get comments
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * Set slug
+     *
+     * @param string $slug
+     *
+     * @return User
+     */
+    public function setSlug($slug)
+    {
+        $this->slug = $slug;
+
+        return $this;
+    }
+
+    /**
+     * Get slug
+     *
+     * @return string
+     */
+    public function getSlug()
+    {
+        return $this->slug;
     }
 }

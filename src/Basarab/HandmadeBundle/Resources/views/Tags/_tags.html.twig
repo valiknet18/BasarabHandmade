@@ -1,0 +1,15 @@
+<ul class="list-group">
+    {% for tag in tags %}
+        <li class="list-group-item">
+            <a href="{{ path("basarab_handmade_tags_get", {"slug": tag.slug}) }}">
+                {{ tag.name }}
+            </a>
+        </li>
+    {% else %}
+        <li class="list-group-item">
+            <h3>
+                На даний момент не добавлено ні одного тегу
+            </h3>
+        </li>
+    {% endfor %}
+</ul>

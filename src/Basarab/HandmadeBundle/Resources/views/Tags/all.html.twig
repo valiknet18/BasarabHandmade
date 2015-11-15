@@ -1,0 +1,27 @@
+{% extends 'BasarabHandmadeBundle::layout.html.twig' %}
+
+{% block title %}
+    Список тегів
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12 row">
+        {% for tag in pagination %}
+            <div class="col-md-4">
+                <a href="{{ path("basarab_handmade_tags_get", {"slug": tag.slug}) }}" class="btn btn-default">
+                    {{ tag.name }}
+                </a>
+            </div>
+        {% else %}
+            <h3>
+                На даний момент не добавлено ні одного тегу
+            </h3>
+        {% endfor %}
+
+        {% if pagination|length > 0 %}
+            <div class="navigation">
+                {{ knp_pagination_render(pagination) }}
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

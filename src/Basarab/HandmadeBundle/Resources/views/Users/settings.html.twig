@@ -1,0 +1,15 @@
+{% extends 'BasarabHandmadeBundle::layout.html.twig' %}
+
+{% block title %}
+    Налаштування
+{% endblock %}
+
+{% block content %}
+    <div class="row col-md-12">
+        {{ form_row(form) }}
+
+        <div>
+            <button type="submit" class="btn btn-success">Зберегти</button>
+        </div>
+    </div>
+{% endblock %}

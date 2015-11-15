@@ -1,0 +1,22 @@
+{% extends 'BasarabHandmadeBundle::layout.html.twig' %}
+
+{% block title %}
+    Тег {{ tag.name }}
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12 row">
+        {% for handmade in tag.handmades %}
+            <div class="col-md-4">
+                <h4>
+                    <a href="{{ path('basarab_handmade_handmades_get', {'slug': handmade.slug}) }}">{{ handmade.name }}</a>
+                </h4>
+                <p>
+                    {{ handmade.text | slice(0, 150) }}...
+                </p>
+            </div>
+        {% else %}
+            <h3>На даний момент не добавлено ні одного запису</h3>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,65 @@
+<!Doctype html>
+<html>
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+        <title>{% block title %}{% endblock %}</title>
+    </head>
+
+    <body>
+        <div class="container">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="#">Handmade museum</a>
+                    </div>
+
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="{{ path('basarab_handmade_index_index') }}">Головна</a></li>
+                            <li><a href="{{ path('basarab_handmade_tags_all') }}">Теги</a></li>
+                            <li><a href="{{ path('basarab_handmade_users_all') }}">Користувачі</a></li>
+                        </ul>
+
+                        <ul class="nav navbar-nav pull-right">
+                            {% if app.user %}
+                                <li>
+                                    <a href="#">Створити запис</a>
+                                </li>
+                                <li>
+                                    <img src="{{ app.user.getWebPath | imagine_filter("mini_avatar") }}" />
+                                </li>
+                                <li>
+                                    <a href="{{ path('basarab_handmade_users_get', {"slug": app.user.slug}) }}">Сторінка користувача</a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('fos_user_security_logout') }}">Вихід</a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ path('fos_user_security_login') }}">Авторизація</a>
+                                </li>
+
+                                <li>
+                                    <a href="{{ path('fos_user_registration_register') }}">Реєстрація</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            {% block content %}{% endblock %}
+
+            <div>
+                {% block fos_user_content %}
+                {% endblock fos_user_content %}
+            </div>
+        </div>
+    </body>
+</html>

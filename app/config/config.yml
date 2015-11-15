@@ -6,11 +6,11 @@ imports:
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: en
+    locale: uk
 
 framework:
     #esi:             ~
-    #translator:      { fallbacks: ["%locale%"] }
+    translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -127,3 +127,13 @@ liip_imagine:
             quality: 75
             filters:
                 thumbnail: { size: [30, 40], mode: outbound }
+
+        slider_handmade:
+            quality: 75
+            filters:
+                thumbnail: { size: [700, 360], mode: outbound }
+
+        handmade_photo:
+            quality: 75
+            filters:
+                thumbnail: { size: [140, 100], mode: outbound }
